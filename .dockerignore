@@ -1,0 +1,22 @@
+# Gradle и IntelliJ
+#.gradle
+build
+out
+.idea
+*.iml
+
+# Логи и временные файлы
+*.log
+*.tmp
+
+# Git
+.git
+.gitignore
+
+# Кэш
+**/__pycache__/
+**/.DS_Store
+
+# Docker
+Dockerfile
+docker-compose.yml
