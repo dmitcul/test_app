@@ -1,0 +1,44 @@
+# Java
+*.class
+*.log
+*.tmp
+*.swp
+*.out
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+*.bak
+
+# Docker
+*.tar
+docker-compose.override.yml
+.env
+
+# Test output
+test-output/
+
+# Coverage
+jacoco.exec
+coverage/
+
+# Dependency cache
+/.mvn/
+.mvn/
+target/
+
