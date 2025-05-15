@@ -74,6 +74,7 @@ class UserServiceImplTest {
                 .email(userEmail)
                 .build();
 
+        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.empty());
         when(userRepository.save(any(UserEntity.class))).thenReturn(savedEntity);
 
         // Act
@@ -84,6 +85,7 @@ class UserServiceImplTest {
         assertEquals(userId, result.id());
         assertEquals(userName, result.name());
         assertEquals(userEmail, result.email());
+        verify(userRepository, times(1)).findByEmail(userEmail);
         verify(userRepository, times(1)).save(any(UserEntity.class));
 
         // Verify log messages
@@ -118,6 +120,51 @@ class UserServiceImplTest {
             }
         }
         assertTrue(hasSuccessLog, "Success log message not found");
+    }
+
+    @Test
+    void createUser_WithExistingEmail_ShouldThrowExceptionAndLogError() {
+        // Arrange
+        UserDto inputDto = new UserDto(null, "New User", userEmail);
+        UserEntity existingUser = UserEntity.builder()
+                .id(2L)
+                .name("Existing User")
+                .email(userEmail)
+                .build();
+
+        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(existingUser));
+
+        // Clear previous logs
+        listAppender.list.clear();
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            userService.createUser(inputDto);
+        });
+
+        assertEquals("User with email " + userEmail + " already exists", exception.getMessage());
+        verify(userRepository, times(1)).findByEmail(userEmail);
+        verify(userRepository, never()).save(any(UserEntity.class));
+
+        // Verify log messages
+        List<ILoggingEvent> logsList = listAppender.list;
+
+        // Should have at least 2 log messages (info at start, error when email exists)
+        assertTrue(logsList.size() >= 2);
+
+        // Verify info log at the beginning
+        assertEquals(Level.INFO, logsList.get(0).getLevel());
+        assertEquals("Creating new user with name: {}, email: {}", logsList.get(0).getMessage());
+
+        // Verify error log when email exists
+        boolean hasErrorLog = false;
+        for (ILoggingEvent event : logsList) {
+            if (event.getLevel() == Level.ERROR && event.getMessage().contains("User with email {} already exists")) {
+                hasErrorLog = true;
+                break;
+            }
+        }
+        assertTrue(hasErrorLog, "Error log message about existing email not found");
     }
 
     @Test
@@ -207,14 +254,16 @@ class UserServiceImplTest {
     @Test
     void updateUser_WhenUserExists_ShouldReturnUpdatedUserDtoAndLogMessages() {
         // Arrange
-        UserDto updateDto = new UserDto(userId, "Updated Name", "updated.email@example.com");
+        String newEmail = "updated.email@example.com";
+        UserDto updateDto = new UserDto(userId, "Updated Name", newEmail);
         UserEntity updatedEntity = UserEntity.builder()
                 .id(userId)
                 .name("Updated Name")
-                .email("updated.email@example.com")
+                .email(newEmail)
                 .build();
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
+        when(userRepository.findByEmail(newEmail)).thenReturn(Optional.empty());
         when(userRepository.save(any(UserEntity.class))).thenReturn(updatedEntity);
 
         // Clear previous logs
@@ -227,8 +276,9 @@ class UserServiceImplTest {
         assertNotNull(result);
         assertEquals(userId, result.id());
         assertEquals("Updated Name", result.name());
-        assertEquals("updated.email@example.com", result.email());
+        assertEquals(newEmail, result.email());
         verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, times(1)).findByEmail(newEmail);
         verify(userRepository, times(1)).save(any(UserEntity.class));
 
         // Verify log messages
@@ -271,6 +321,73 @@ class UserServiceImplTest {
             }
         }
         assertTrue(hasSuccessLog, "Success log message not found");
+    }
+
+    @Test
+    void updateUser_WithExistingEmail_ShouldThrowExceptionAndLogError() {
+        // Arrange
+        Long existingUserId = 2L;
+        String existingEmail = "existing.email@example.com";
+
+        UserDto updateDto = new UserDto(userId, "Updated Name", existingEmail);
+
+        UserEntity userToUpdate = UserEntity.builder()
+                .id(userId)
+                .name(userName)
+                .email(userEmail)
+                .build();
+
+        UserEntity existingUser = UserEntity.builder()
+                .id(existingUserId)
+                .name("Existing User")
+                .email(existingEmail)
+                .build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userToUpdate));
+        when(userRepository.findByEmail(existingEmail)).thenReturn(Optional.of(existingUser));
+
+        // Clear previous logs
+        listAppender.list.clear();
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            userService.updateUser(userId, updateDto);
+        });
+
+        assertEquals("Email " + existingEmail + " already in use by another user", exception.getMessage());
+        verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, times(1)).findByEmail(existingEmail);
+        verify(userRepository, never()).save(any(UserEntity.class));
+
+        // Verify log messages
+        List<ILoggingEvent> logsList = listAppender.list;
+
+        // Should have at least 3 log messages (info at start, debug when found, error when email exists)
+        assertTrue(logsList.size() >= 3);
+
+        // Verify info log at the beginning
+        assertEquals(Level.INFO, logsList.get(0).getLevel());
+        assertTrue(logsList.get(0).getMessage().contains("Updating user with id"));
+
+        // Verify debug log when user is found
+        boolean hasFoundDebugLog = false;
+        for (ILoggingEvent event : logsList) {
+            if (event.getLevel() == Level.DEBUG && event.getMessage().contains("Found user to update")) {
+                hasFoundDebugLog = true;
+                break;
+            }
+        }
+        assertTrue(hasFoundDebugLog, "Debug log message about found user not found");
+
+        // Verify error log when email exists
+        boolean hasErrorLog = false;
+        for (ILoggingEvent event : logsList) {
+            if (event.getLevel() == Level.ERROR && event.getMessage().contains("Cannot update user. Email {} already in use")) {
+                hasErrorLog = true;
+                break;
+            }
+        }
+        assertTrue(hasErrorLog, "Error log message about existing email not found");
     }
 
     @Test

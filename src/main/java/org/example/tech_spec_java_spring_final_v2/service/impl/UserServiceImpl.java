@@ -21,6 +21,12 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto dto) {
         logger.info("Creating new user with name: {}, email: {}", dto.name(), dto.email());
 
+        // Check if user with the same email already exists
+        userRepository.findByEmail(dto.email()).ifPresent(existingUser -> {
+            logger.error("User with email {} already exists", dto.email());
+            throw new RuntimeException("User with email " + dto.email() + " already exists");
+        });
+
         UserEntity user = UserEntity.builder()
                 .name(dto.name())
                 .email(dto.email())
@@ -68,6 +74,16 @@ public class UserServiceImpl implements UserService {
                 });
 
         logger.debug("Found user to update: {}", user.getName());
+
+        // Check if email is being changed and if the new email already exists for another user
+        if (!user.getEmail().equals(dto.email())) {
+            userRepository.findByEmail(dto.email()).ifPresent(existingUser -> {
+                if (!existingUser.getId().equals(id)) {
+                    logger.error("Cannot update user. Email {} already in use by another user", dto.email());
+                    throw new RuntimeException("Email " + dto.email() + " already in use by another user");
+                }
+            });
+        }
 
         user.setName(dto.name());
         user.setEmail(dto.email());
