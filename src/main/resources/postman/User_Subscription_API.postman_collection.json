@@ -1,0 +1,247 @@
+{
+	"info": {
+		"_postman_id": "f8a9e5b3-7c1d-4e5f-8d6a-9b8c0d1e2f3a",
+		"name": "User Subscription API",
+		"description": "Collection for testing the User Subscription API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users"
+							]
+						},
+						"description": "Creates a new user with the given name and email."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"1"
+							]
+						},
+						"description": "Retrieves a user by their ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Updated\",\n    \"email\": \"john.updated@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"1"
+							]
+						},
+						"description": "Updates an existing user's information."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"1"
+							]
+						},
+						"description": "Deletes a user by their ID."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing users"
+		},
+		{
+			"name": "Subscriptions",
+			"item": [
+				{
+					"name": "Add Subscription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"serviceName\": \"Netflix\",\n    \"startDate\": \"2023-05-15\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/1/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+								],
+							"port": "8080",
+							"path": [
+								"users",
+								"1",
+								"subscriptions"
+							]
+						},
+						"description": "Adds a new subscription for a user. The startDate is optional and defaults to the current date if not provided."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Subscriptions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/1/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"1",
+								"subscriptions"
+							]
+						},
+						"description": "Retrieves all subscriptions for a specific user."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Subscription",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/1/subscriptions/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"1",
+								"subscriptions",
+								"1"
+							]
+						},
+						"description": "Deletes a specific subscription for a user."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Top Subscriptions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/subscriptions/top",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"subscriptions",
+								"top"
+							]
+						},
+						"description": "Retrieves the top 3 most popular subscriptions."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing subscriptions"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
