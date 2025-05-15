@@ -1,13 +1,12 @@
 FROM amazoncorretto:17-alpine AS build
 WORKDIR /app
 
-COPY gradlew .
 COPY gradle gradle
 COPY build.gradle .
 COPY settings.gradle .
-RUN ./gradlew --version
-
 COPY . .
+
+RUN chmod +x gradlew
 RUN ./gradlew clean build -x test
 
 
