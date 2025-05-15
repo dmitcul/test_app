@@ -1,1 +1,4 @@
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
 rootProject.name = 'tech_spec_java_spring_final_v2'
