@@ -1,4 +1,3 @@
--- Тестовые данные для таблицы пользователей
 INSERT INTO users (name, email) VALUES
     ('Иван Иванов', 'ivan@example.com'),
     ('Мария Петрова', 'maria@example.com'),
@@ -6,7 +5,6 @@ INSERT INTO users (name, email) VALUES
     ('Елена Смирнова', 'elena@example.com'),
     ('Дмитрий Козлов', 'dmitry@example.com');
 
--- Тестовые данные для таблицы подписок
 INSERT INTO subscriptions (user_id, service_name, start_date) VALUES
     (1, 'Netflix', '2023-01-15'),
     (1, 'Spotify', '2023-02-20'),
